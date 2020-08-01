@@ -27,7 +27,7 @@ tn = sum((1 .- targets) .* (1 .- predicts))
 fp = sum((1 .- targets) .* predicts)
 fn = sum(targets .* (1 .- predicts))
 
-cm = ConfusionMatrix(p,n,tp,tn,fp,fn)
+cm = ConfusionMatrix(tp,tn,fp,fn)
 
 set_encoding(OneZero())
 
