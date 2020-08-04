@@ -5,14 +5,16 @@ export AbstractEncoding, MultiClassEncoding, TwoClassEncoding,
        check_encoding, ispositive, isnegative,
        current_encoding, set_encoding, reset_encoding, recode, classify
 
-
-abstract type AbstractEncoding{T}; end
+abstract type AbstractEncoding{T} end
 abstract type MultiClassEncoding{T} <: AbstractEncoding{T}; end
 abstract type TwoClassEncoding{T} <: AbstractEncoding{T}; end
 
-Base.show(io::IO, ::MIME"text/plain", enc::T) where {T <: TwoClassEncoding} =
-    print(io, "$T: \n   positive class: $(enc.positives) \n   negative class: $(enc.negatives)")
-
+function Base.show(io::IO, ::MIME"text/plain", enc::T) where {T <: TwoClassEncoding}
+    println(io, T)
+    println(io, "  positive class: ", positives(enc))
+    println(io, "  negative class: ", negatives(enc))
+    return
+end
 
 include("twoclassencodings.jl")
 include("utilities.jl")

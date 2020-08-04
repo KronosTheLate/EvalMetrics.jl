@@ -1,5 +1,5 @@
 using EvalMetrics.Encodings
-import EvalMetrics.Encodings: positive_label, negative_label
+import EvalMetrics.Encodings: positives, negatives, label
 
 
 @testset "ispositive" begin
@@ -39,21 +39,21 @@ end
 end
 
 @testset "positive_label" begin
-    @test positive_label(OneZero()) == 1
-    @test positive_label(OneTwo()) == 1
-    @test positive_label(OneMinusOne()) == 1
-    @test positive_label(OneVsRest(1, [2,3])) == 1
-    @test positive_label(RestVsOne([1,2], 3)) == 1
-    @test positive_label(RestVsOne([2,1], 3)) == 2
+    @test label(positives(OneZero())) == 1
+    @test label(positives(OneTwo())) == 1
+    @test label(positives(OneMinusOne())) == 1
+    @test label(positives(OneVsRest(1, [2,3]))) == 1
+    @test label(positives(RestVsOne([1,2], 3))) == 1
+    @test label(positives(RestVsOne([2,1], 3))) == 2
 end
 
 @testset "negative_label" begin
-    @test negative_label(OneZero()) == 0
-    @test negative_label(OneTwo()) == 2
-    @test negative_label(OneMinusOne()) == -1
-    @test negative_label(OneVsRest(1, [2,3])) == 2
-    @test negative_label(OneVsRest(1, [3,2])) == 3
-    @test negative_label(RestVsOne([1,2], 3)) == 3
+    @test label(negatives(OneZero())) == 0
+    @test label(negatives(OneTwo())) == 2
+    @test label(negatives(OneMinusOne())) == -1
+    @test label(negatives(OneVsRest(1, [2,3]))) == 2
+    @test label(negatives(OneVsRest(1, [3,2]))) == 3
+    @test label(negatives(RestVsOne([1,2], 3))) == 3
 end
 
 

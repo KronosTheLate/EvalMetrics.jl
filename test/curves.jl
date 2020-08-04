@@ -1,4 +1,4 @@
-import EvalMetrics.Encodings: positive_label, negative_label
+import EvalMetrics.Encodings: positives, negatives, label
 import EvalMetrics: apply, thresholds
 
 using Base.Iterators: product
@@ -51,8 +51,8 @@ encs = [
     set_encoding(enc)
 
     @testset "check target" begin
-        all_neg = fill(negative_label(enc), 10)
-        all_pos = fill(positive_label(enc), 10)
+        all_neg = fill(label(negatives(enc)), 10)
+        all_pos = fill(label(positives(enc)), 10)
 
         @test_throws ArgumentError au_roccurve(all_neg, rand(10))
         @test_throws ArgumentError au_roccurve(all_pos, rand(10))
