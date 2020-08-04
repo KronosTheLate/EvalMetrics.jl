@@ -40,8 +40,8 @@ Compute confusion matrix directly from
 
 # Arguments
 
-- `targets::AbstractVector`: a vector of targets (true labels)
-- `predicts::AbstractVector`: a vector of predictions (predicted labels)
+- `targets::AbstractVector`: ground truth (correct) target values
+- `predicts::AbstractVector`: estimated targets returned by a classifier
 - `scores::RealVector`: a vector of scores given by the classifier; a sample `i` is classified as positive if `scores[i] >= t`, where `t` is the decision threshold
 - `thres::Union{Real, RealVector}`: decision threshold or a sorted vector of decision thresholds; if `thres` is scalar the constructor returns one confusion matrix, otherwise it returns a vector of confusion matrices
 - `enc::TwoClassEncoding`: label encoding for two-class problems; the default encoding is given by [`current_encoding`](@ref) function
