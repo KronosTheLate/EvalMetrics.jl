@@ -36,7 +36,7 @@ end
     ConfusionMatrix(targets, scores, thres)
     ConfusionMatrix(enc, targets, scores, thres)
 
-Compute confusion matrix directly from
+Return a confusion matrix computed from the target vector and the predicted vector or the score vector and decision threshold(s).
 
 # Arguments
 
