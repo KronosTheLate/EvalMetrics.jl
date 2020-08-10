@@ -73,9 +73,9 @@ or with custom label encoding
 
 ```jldoctest
 julia> enc = OneVsOne("1", "0")
-OneVsOne{String}:
-   positive class: 1
-   negative class: 0
+OneVsOne{String}
+  positive class: 1
+  negative class: 0
 
 julia> targets = ["0", "1", "1", "0", "1", "0", "1", "1", "0", "1"];
 
