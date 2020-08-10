@@ -33,7 +33,7 @@ is equivalent to
 ```julia
 abstract type True_positive <: AbstractMetric end
 
-true_positive(args...; kwargs...) = apply(::Type{True_positive}, args...; kwargs...)
+true_positive(args...; kwargs...) = apply(True_positive, args...; kwargs...)
 
 apply(::Type{True_positive}, x::ConfusionMatrix) = x.tp
 ```
