@@ -1,17 +1,3 @@
-x = sort(rand(123))
-ys = [sort(rand(456)), rand()]
-
-
-@testset "mergesorted" for y in ys
-    z, inds = mergesorted(x, y)
-
-    @test z == sort(vcat(x, y))
-    @test z[inds] == y
-    @test z[setdiff(1:length(z), inds)] == x
-end
-
-
-
 n  = 1000
 x  = range(0, 1, length = n)
 atol = 1e-6

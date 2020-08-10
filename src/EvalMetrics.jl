@@ -79,8 +79,7 @@ export
     ROCCurve, roccurve, au_roccurve, rocplot,
 
     # utilities
-    binary_eval_report,
-    mergesorted
+    binary_eval_report
 
 
 binary_eval_report(targets::AbstractVector, scores::RealVector, fpr = 0.05) =
