@@ -2,11 +2,11 @@ module EvalMetrics
 
 
 import Base: show, precision
-import DocStringExtensions: SIGNATURES
 import Statistics: quantile
-import StatsBase: RealVector
 using RecipesBase
 using Reexport
+
+const RealVector{T<:Real} = AbstractArray{T,1}
 
 include("encodings/Encodings.jl")
 @reexport using .Encodings
