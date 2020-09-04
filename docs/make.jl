@@ -1,6 +1,7 @@
 using Documenter
 using EvalMetrics
 
+DocMeta.setdocmeta!(EvalMetrics, :DocTestSetup, :(using EvalMetrics); recursive=true)
 
 makedocs(
     sitename = "EvalMetrics",
@@ -9,9 +10,10 @@ makedocs(
     pages = [
         "Home" => "index.md",
         "Classification metrics" => "metrics.md",
-        "Evaluation curves" => "curves.md",
         "Decision thresholds" => "thresholds.md",
+        "Evaluation curves" => "curves.md",
         "Label encodings" => "encodings.md",
+        "API" => "api.md",
     ]
 )
 

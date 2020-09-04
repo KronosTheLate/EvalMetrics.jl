@@ -1,24 +1,24 @@
-```@setup encodings
-using EvalMetrics
-
-Random.seed!(123)
-reset_encoding()
-```
-
 # Label encodings
 
 Different label encodings are considered common in different machine learning applications. For example, support vector machines use `1` as a positive label and `-1` as a negative label. On the other hand, it is common for neural networks to use `0` as a negative label. The package provides some basic label encodings listed in the following table
 
-| Encoding                                               | positive label(s) | negative label(s) |
-| :----------------------------------------------------- | :---------------: | :---------------: |
-| `OneZero(::Type{T})`                                   | `one(T)`          | `zero(T)`         |
-| `OneMinusOne(::Type{T})`                               | `one(T)`          | `-one(T)`         |
-| `OneTwo(::Type{T})`                                    | `one(T)`          | `2*one(T)`        |
-| `OneVsOne(::Type{T}, pos::T, neg::T)`                  | `pos`             | `neg`             |
-| `OneVsRest(::Type{T}, pos::T, neg::AbstractVector{T})` | `pos`             | `neg`             |
-| `RestVsOne(::Type{T}, pos::AbstractVector{T}, neg::T)` | `pos`             | `neg`             |
+| Encoding              | positive label(s) | negative label(s) |
+| :--                   | :--               | :--               |
+| [`OneZero`](@ref)     | `one(T)`          | `zero(T)`         |
+| [`OneMinusOne`](@ref) | `one(T)`          | `-one(T)`         |
+| [`OneTwo`](@ref)      | `one(T)`          | `2*one(T)`        |
+| [`OneVsOne`](@ref)    | `pos`             | `neg`             |
+| [`OneVsRest`](@ref)   | `pos`             | `neg`             |
+| [`RestVsOne`](@ref)   | `pos`             | `neg`             |
 
-The `current_encoding` function can be used to verify which encoding is currently in use (by default it is `OneZero` encoding)
+The [`current_encoding`](@ref) function can be used to verify which encoding is currently in use (by default it is [`OneZero`](@ref) encoding)
+
+```@setup encodings
+using EvalMetrics, Random
+
+Random.seed!(123)
+reset_encoding()
+```
 
 ```@example encodings
 targets = rand(0:1, 100)

@@ -1,15 +1,8 @@
-```@setup metrics
-using EvalMetrics
-import Random
-
-Random.seed!(123)
-reset_encoding()
-```
-
 # Classification metrics
 
 ## Confusion Matrix
-The core the package is the `ConfusionMatrix` structure, which represents the [confusion matrix](https://en.wikipedia.org/wiki/Confusion_matrix) in the following form
+
+The core the package is the [`ConfusionMatrix`](@ref) structure, which represents the [confusion matrix](https://en.wikipedia.org/wiki/Confusion_matrix) in the following form
 
 | `` ``                   |    Actual positives    |    Actual negatives    |
 |:--                      |:-:                     |:-:                     |
@@ -17,7 +10,15 @@ The core the package is the `ConfusionMatrix` structure, which represents the [c
 | **Predicted negatives** | fn (# false negatives) | tn (# true negatives)  |
 |                         | p (# positives)        | n (# negatives)        |
 
-The confusion matrix can be calculated from targets and predicted values or from targets, scores, and one or more decision thresholds 
+The confusion matrix can be calculated from targets and predicted values or from targets, scores, and one or more decision thresholds
+
+```@setup metrics
+using EvalMetrics
+import Random
+
+Random.seed!(123)
+reset_encoding()
+```
 
 ```@example metrics
 targets = rand(0:1, 100)
@@ -64,7 +65,7 @@ The package provides many basic classification metrics based on the confusion ma
 | [`diagnostic_odds_ratio`](@ref)            |                                      |
 | [`prevalence`](@ref)                       |                                      |
 
-Each metric can be computed from the `ConfusionMatrix` structure 
+Each metric can be computed from the [`ConfusionMatrix`](@ref) structure
 
 ```@repl metrics
 recall(cm1)
@@ -83,7 +84,7 @@ recall(targets, scores, [thres, thres])
 ```
 
 ## User defined classification metrics
-It may occur that some useful metric is not defined in the package. To simplify the process of defining a new metric, the package provides the `@metric` macro and `apply` function. 
+It may occur that some useful metric is not defined in the package. To simplify the process of defining a new metric, the package provides the [`@metric`](@ref) macro and [`apply`](@ref) function.
 
 ```@example metrics
 import EvalMetrics: @metric, apply
@@ -93,14 +94,16 @@ import EvalMetrics: @metric, apply
 apply(::Type{MyRecall}, x::ConfusionMatrix) = x.tp/x.p
 ```
 
-In the previous example, macro `@metric` defines a new abstract type `MyRecall` (used for dispatch) and a function `myrecall` (for easy use of the new metric).  With defined abstract type `MyRecall`, the next step is to define a new method for the `apply` function. This method must have exactly two input arguments: `Type{MyRecall}` and `ConfusionMatrix`.  If another argument is needed, it can be added as a keyword argument.
+In the previous example, macro [`@metric`](@ref) defines a new abstract type `MyRecall` (used for dispatch) and a function `myrecall` (for easy use of the new metric).  With defined abstract type `MyRecall`, the next step is to define a new method for the [`apply`](@ref) function. This method must have exactly two input arguments: `Type{MyRecall}` and [`ConfusionMatrix`](@ref).  If another argument is needed, it can be added as a keyword argument.
 
 ```julia
-apply(::Type{Fβ_score}, x::ConfusionMatrix; β::Real = 1) =
-    (1 + β^2)*precision(x)*recall(x)/(β^2*precision(x) + recall(x))
+function apply(::Type{Fβ_score}, x::ConfusionMatrix; β::Real = 1)
+    return (1 + β^2)*precision(x)*recall(x)/(β^2*precision(x) + recall(x))
+end
 ```
 
-It is easy to check that the `myrecall` metric returns the same outputs as the `recall` metric defined in the package
+It is easy to check that the `myrecall` metric returns the same outputs as the [`recall`](@ref) metric defined in the package
+
 ```@repl metrics
 myrecall(cm1)
 myrecall(cm2)
@@ -110,35 +113,4 @@ myrecall(targets, predicts)
 myrecall(targets, scores, thres)
 myrecall(targets, scores, thres)
 myrecall(targets, scores, [thres, thres])
-```
-
-## All metrics
-
-```@docs
-true_negative(x)
-true_positive(x)
-false_positive(x)
-false_negative(x)
-true_positive_rate(x)
-true_negative_rate(x)
-false_positive_rate(x)
-false_negative_rate(x)
-precision(x)
-negative_predictive_value(x)
-false_discovery_rate(x)
-false_omission_rate(x)
-threat_score(x)
-accuracy(x)
-balanced_accuracy(x)
-error_rate(x)
-balanced_error_rate(x)
-f1_score(x)
-fβ_score(x)
-matthews_correlation_coefficient(x)
-quant(x)
-topquant(x)
-positive_likelihood_ratio(x)
-negative_likelihood_ratio(x)
-diagnostic_odds_ratio(x)
-prevalence(x)
 ```

@@ -6,10 +6,14 @@ using MLBase
 Random.seed!(42)
 
 mkpath("./figures")
+
+reset_encoding()
 ```
 
 ```@setup curves
 using EvalMetrics
+
+reset_encoding()
 ```
 
 
@@ -27,7 +31,7 @@ All possible calls:
 - `prcurve(targets::AbstractVector, scores::RealVector)` returns all `length(target) + 1` points
 - `prcurve(enc::AbstractEncoding, target::AbstractVector, scores::RealVector)` makes different encodings possible
 - `prcurve(targets::AbstractVector, scores::RealVector, thres::RealVector)` uses provided threshols to compute individual points
-- `prcurve(enc::AbstractEncoding, target::AbstractVector, scores::RealVector, thres::RealVector)` 
+- `prcurve(enc::AbstractEncoding, target::AbstractVector, scores::RealVector, thres::RealVector)`
 - `prcurve(cms::AbstractVector{<:ConfusionMatrix})`
 
 We can also compute area under the curve using the `auc_trapezoidal` function which uses the trapezoidal rule as follows:
@@ -119,7 +123,7 @@ savefig("./figures/roc2.png") # hide
 ```
 
 
-'Modifying' versions with exclamation marks `prplot!` and `rocplot!` work as well. 
+'Modifying' versions with exclamation marks `prplot!` and `rocplot!` work as well.
 
 The appearance of the plot can be changed in exactly the same way as with `Plots` library. Therefore, keyword arguments such as `xguide`, `xlims`, `grid`, `fill` can all be used:
 
@@ -161,11 +165,11 @@ savefig("./figures/roc4.png") # hide
 By default, plotted curves have 300 points, which are sampled to retain as much information as possible. This amounts to sampling false positive rate in case of ROC curves and true positive rate in case of PR curves instead of raw thresholds. The number of points can be again changed by keyword argument `npoints`:
 
 ```@example plots
-prplot(targets, scores; npoints=Inf, label="Original") 
-prplot!(targets, scores; npoints=10, label="Sampled (10 points)") 
-prplot!(targets, scores; npoints=100, label="Sampled (100 points)") 
-prplot!(targets, scores; npoints=1000, label="Sampled (1000 points)") 
-prplot!(targets, scores; npoints=5000, label="Sampled (5000 points)") 
+prplot(targets, scores; npoints=-1, label="Original")
+prplot!(targets, scores; npoints=10, label="Sampled (10 points)")
+prplot!(targets, scores; npoints=100, label="Sampled (100 points)")
+prplot!(targets, scores; npoints=1000, label="Sampled (1000 points)")
+prplot!(targets, scores; npoints=5000, label="Sampled (5000 points)")
 savefig("./figures/roc4.png") # hide
 ```
 
@@ -195,7 +199,7 @@ savefig("./figures/roc5.png") # hide
 PR and ROC curves are available out of the box. Additional curve definitions can be provided in the similar way as new metrics are defined using macro `@curve` and defining `apply` function, which computes a point on the curve. For instance, ROC curve can be defined this way:
 
 ```@repl curves
-import EvalMetrics: @curve, apply 
+import EvalMetrics: @curve, apply
 @curve MyROCCurve
 apply(::Type{MyROCCurve}, cms::AbstractVector{ConfusionMatrix{T}}) where T <: Real =
     (false_positive_rate(cms), true_positive_rate(cms))
