@@ -289,7 +289,7 @@ end
 For given false positive rate `tnr ∈ [0, 1]`, return the smallest possible decision threshold `t` that satisfies
 
 ```math
-\mathrm{false\_positive\_rate}(targets, scores, t) \geq fpr < \mathrm{false\_positive\_rate}(targets, scores, t - \varepsilon)
+\mathrm{false\_positive\_rate}(targets, scores, t) \leq fpr < \mathrm{false\_positive\_rate}(targets, scores, t - \varepsilon)
 ```
 
 # Arguments
@@ -361,7 +361,7 @@ end
 For given false positive rate `fnr ∈ [0, 1]`, return the highest possible decision threshold `t` that satisfies
 
 ```math
-\mathrm{false\_negative\_rate}(targets, scores, t) \geq fnr < \mathrm{false\_negative\_rate}(targets, scores, t + \varepsilon)
+\mathrm{false\_negative\_rate}(targets, scores, t) \leq fnr < \mathrm{false\_negative\_rate}(targets, scores, t + \varepsilon)
 ```
 
 # Arguments
