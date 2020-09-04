@@ -11,7 +11,6 @@ using Reexport
 include("encodings/Encodings.jl")
 @reexport using .Encodings
 
-include("utilities.jl")
 include("confusion_matrix.jl")
 
 const CMVector{T<:Real} = AbstractVector{ConfusionMatrix{T}}
@@ -19,6 +18,8 @@ const CMVector{T<:Real} = AbstractVector{ConfusionMatrix{T}}
 include("metrics.jl")
 include("thresholds.jl")
 include("curves.jl")
+include("recipes.jl")
+include("utilities.jl")
 
 export
     # confusion matrix
@@ -74,7 +75,7 @@ export
 
     #curves
     auc_trapezoidal,
-    curve, auc,
+    auc,
     PRCurve, prcurve, au_prcurve, prplot,
     ROCCurve, roccurve, au_roccurve, rocplot,
 
