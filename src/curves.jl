@@ -1,5 +1,12 @@
 abstract type AbstractCurve end
 
+logrange(x1, x2; kwargs...) = exp10.(range(log10(x1), log10(x2); kwargs...))
+
+# by default always compute auc and curve points from all possible points
+function auc(C::Type{<:AbstractCurve}, args...; npoints = -1, kwargs...)
+    return auc_trapezoidal(apply(C, args...; npoints = npoints, kwargs...))
+end
+
 apply(C::Type{<:AbstractCurve}, cs::CMVector, args...; kwargs...) = apply(C, cs, args...)
 
 function apply(C::Type{<:AbstractCurve}, args...; kwargs...)

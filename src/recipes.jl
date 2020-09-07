@@ -42,6 +42,38 @@ end
 
 @shorthands mlcurve
 
+# label with auc
+function auc_label(plotattributes, auc_score, args...)
+    user_label = get(plotattributes, :label, "AUTO")
+
+    if get(plotattributes, :aucshow, false)
+        auc_label = string.("auc: ", round.(100 * auc_score', digits = 2), "%")
+        if user_label != "AUTO"
+            return string.(user_label, " (", auc_label, ")")
+        else
+            return auc_label
+        end
+    else
+        user_label
+    end
+end
+
+# plot limits
+positives(x::Real) = x > 0 ? x : typemax(x)
+minimum_pos(x) = minimum(positives, x)
+ident_lims() = (0, 1.01)
+log_lims(x::Tuple, f) = (minimum_pos(f(x)), 1.01)
+log_lims(x, f) = (minimum(minimum_pos, f.(x)), 1.01)
+
+function _lims(points, plotattributes, key)
+    scale = get(plotattributes, key, :identity)
+    if scale == :identity
+        return ident_lims()
+    else
+        return key == :xscale ? log_lims(points, first) : log_lims(points, last)
+    end
+end
+
 # type recipies
 @recipe function f(C::Type{<:AbstractCurve}, args...)
     points = apply(C, args...; plotattributes...)
