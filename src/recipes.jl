@@ -1,7 +1,13 @@
-# TODO enable scattering points across pr and roc curves based on thresholds, tpr, fpr, or precision
-
 # series recipe
-@recipe function f(::Type{Val{:mlcurve}}, x, y, z; indexes = Int[], diagonal = false)
+@recipe function f(
+    ::Type{Val{:mlcurve}},
+    x,
+    y,
+    z;
+    highlight = (x,y) -> Int[],
+    diagonal = false
+)
+
     # main curve
     @series begin
         seriestype := :path
@@ -12,12 +18,20 @@
     end
 
     # points on the main curve
+    indexes = highlight(x,y) |> skipmissing |> collect
     if !isempty(indexes)
+        lbls = map(indexes) do i
+            lbl = "($(round(x[i]; digits = 2)),  $(round(y[i]; digits = 2)))"
+            return (x[i], y[i], Plots.text(lbl, :bottom, 8))
+        end
+
         @series begin
             primary := false
             seriestype := :scatter
             markerstrokecolor := :auto
+            fill := false
             label := ""
+            annotations := lbls
             x := x[indexes]
             y := y[indexes]
             ()
@@ -38,6 +52,16 @@
             ()
         end
     end
+end
+
+function findrates(x, y, rates::AbstractArray; kwargs...)
+    return [findrates(x, y, rate; kwargs...) for rate in rates]
+end
+
+function findrates(x, y, rate::Real; xaxis::Bool = true)
+    vals = xaxis ? x : y
+    ind = findfirst(val -> val >= rate, vals)
+    return typeof(ind) <: Integer ? ind : missing
 end
 
 @shorthands mlcurve
