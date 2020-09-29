@@ -5,6 +5,7 @@ import Base: show, precision
 import Statistics: quantile
 using RecipesBase
 using Reexport
+using Requires
 
 const RealVector{T<:Real} = AbstractArray{T,1}
 
@@ -82,6 +83,9 @@ export
     # utilities
     binary_eval_report
 
+function __init__()
+    @require Plots="91a5bcdd-55d7-5caf-9e0b-520d859cae80" @eval using .Plots
+end
 
 binary_eval_report(targets::AbstractVector, scores::RealVector, fpr = 0.05) =
     binary_eval_report(current_encoding(), targets, scores, fpr)
