@@ -7,10 +7,16 @@ function auc(C::Type{<:AbstractCurve}, args...; npoints = -1, kwargs...)
     return auc_trapezoidal(apply(C, args...; npoints = npoints, kwargs...))
 end
 
-apply(C::Type{<:AbstractCurve}, cs::CMVector, args...; kwargs...) = apply(C, cs, args...)
+apply(C::Type{<:AbstractCurve}, cs::CMVector, args...; kwargs...) = apply(C, cs)
 
-function apply(C::Type{<:AbstractCurve}, args...; kwargs...)
-    return apply(C, current_encoding(), args...;kwargs...)
+function apply(
+    C::Type{<:AbstractCurve},
+    targets::AbstractArray,
+    scores::AbstractArray,
+    args...;
+    kwargs...)
+
+    return apply(C, current_encoding(), targets, scores, args...; kwargs...)
 end
 
 function apply(

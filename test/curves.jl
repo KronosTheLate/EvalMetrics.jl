@@ -2,6 +2,7 @@ import EvalMetrics.Encodings: positives, negatives, label
 import EvalMetrics: apply, thresholds
 
 using Base.Iterators: product
+using Plots
 
 
 targets = [
@@ -81,6 +82,7 @@ encs = [
         end
 
         @testset "auc for ROCCurve" begin
+            @test auc_trapezoidal(roccurve(cms)...) ≈ auroc_o
             @test auc(ROCCurve, cms) ≈ auroc_o
             @test auc(ROCCurve, y, s) ≈ auroc_o
             @test auc(ROCCurve, enc, y, s)≈ auroc_o
@@ -95,6 +97,7 @@ encs = [
         end
 
         @testset "auc for PRCurve" begin
+            @test auc_trapezoidal(prcurve(cms)...) ≈ auprc_o
             @test auc(PRCurve, cms) ≈ auprc_o
             @test auc(PRCurve, y, s) ≈ auprc_o
             @test auc(PRCurve, enc, y, s) ≈ auprc_o
@@ -110,30 +113,31 @@ encs = [
     end
 end
 
-using Plots
+@testset "curves plotting for $enc encoding" for enc in encs
+    set_encoding(enc)
 
-set_encoding(OneZero())
+    @testset "n = $(n)" for n in [2, 5, 10, 10^3, 10^5]
+        targs = rand(Bool, n)
+        targs[1] = true
+        targs[2] = false
+        scrs = rand(n)
+        ts = sort(rand(max(2, n ÷ 2)))
 
-@testset "curves plotting" begin
-    for trial in 1:10
-        for n in [2, 5, 10, 10^3, 10^5]
-            targets = rand(Bool, n)
-            targets[1] = true
-            targets[2] = false
-            scores = rand(n)
-            thres = sort(rand(max(2, n ÷ 2)))
+        targs = recode.(OneZero(), enc, targs)
 
-            enc_args = [(OneZero(),), ()]
-            target_scores_args = [(targets, scores), (fill(targets, 3), fill(scores, 3))]
-            threshold_args = [(thres,), ()]
+        target_scores_args = [(targs, scrs), (fill(targs, 3), fill(scrs, 3))]
+        threshold_args = [(ts,), ()]
 
-            for (e_args, ts_args, t_args) in product(enc_args, target_scores_args, threshold_args)
-                # the following shouldn't fail
-                prplot(e_args..., ts_args..., t_args...);
-                prplot!(e_args..., ts_args..., t_args...);
-                rocplot(e_args..., ts_args..., t_args...);
-                rocplot!(e_args..., ts_args..., t_args...);
-            end
+        for (ts_args, t_args) in product(target_scores_args, threshold_args)
+            # the following shouldn't fail
+            prplot(ts_args..., t_args...);
+            prplot!(ts_args..., t_args...);
+            prplot(enc, ts_args..., t_args...);
+            prplot!(enc, ts_args..., t_args...);
+            rocplot(ts_args..., t_args...);
+            rocplot!(ts_args..., t_args...);
+            rocplot(enc, ts_args..., t_args...);
+            rocplot!(enc, ts_args..., t_args...);
         end
     end
 end
