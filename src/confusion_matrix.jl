@@ -95,8 +95,16 @@ julia> ConfusionMatrix(enc, targets, scores, [0.6, 0.6])
  ConfusionMatrix{Int64}(6, 4, 3, 2, 2, 3)
 ```
 """
-function ConfusionMatrix(targets::AbstractVector, args...)
+function ConfusionMatrix(targets::AbstractArray, args...)
     return ConfusionMatrix(current_encoding(), targets, args...)
+end
+
+function ConfusionMatrix(
+    enc::TwoClassEncoding,
+    targets::AbstractArray,
+    predicts::AbstractArray,
+)
+    return ConfusionMatrix(enc, view(targets, :), view(predicts, :))
 end
 
 function ConfusionMatrix(
@@ -125,6 +133,15 @@ function ConfusionMatrix(
         end
     end
     return ConfusionMatrix(tp, tn, fp, fn)
+end
+
+function ConfusionMatrix(
+    enc::TwoClassEncoding,
+    targets::AbstractArray,
+    scores::AbstractArray,
+    thres,
+)
+    return ConfusionMatrix(enc, view(targets, :), view(scores, :), thres)
 end
 
 function ConfusionMatrix(

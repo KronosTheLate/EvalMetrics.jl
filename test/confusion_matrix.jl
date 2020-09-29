@@ -29,6 +29,7 @@ encs = [
     RestVsOne(["one", "two"], "three")
 ]
 
+shapes = [(n, ), (1, n), (1, n, 1)]
 
 @testset "ConfusionMatrix +" begin
     @test cm + cm == cm2
@@ -42,11 +43,15 @@ end
     predicts = recode.(current_encoding(), enc, predicts)
     set_encoding(enc)
 
+    @testset "shape = $(shape)" for shape in shapes
+        targts = reshape(targets, shape...)
+        predicts = reshape(predicts, shape...)
 
-    @test ConfusionMatrix(targets, predicts) == cm
-    @test ConfusionMatrix(enc, targets, predicts) == cm
-    @test ConfusionMatrix(targets, scores, thres) == cm
-    @test ConfusionMatrix(enc, targets, scores, thres) == cm
-    @test ConfusionMatrix(targets, scores, [thres]) == [cm]
-    @test ConfusionMatrix(enc, targets, scores, [thres]) == [cm]
+        @test ConfusionMatrix(targets, predicts) == cm
+        @test ConfusionMatrix(enc, targets, predicts) == cm
+        @test ConfusionMatrix(targets, scores, thres) == cm
+        @test ConfusionMatrix(enc, targets, scores, thres) == cm
+        @test ConfusionMatrix(targets, scores, [thres]) == [cm]
+        @test ConfusionMatrix(enc, targets, scores, [thres]) == [cm]
+    end
 end
