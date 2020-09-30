@@ -42,7 +42,7 @@ end
 """
     classify(enc::TwoClassEncoding, score, thres)
 
-Return a label that represents a positive class in `enc` if `score> = thres`, and a label that represents a negative class in `enc` otherwise.
+Return a label that represents a positive class in `enc` if `score >= thres`, and a label that represents a negative otherwise.
 
 # Examples
 
