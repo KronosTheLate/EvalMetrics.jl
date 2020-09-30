@@ -57,10 +57,9 @@ function thresholds(
     N = reduced ? min(length(scores), n) : n
     thres = quantile(scores, range(0, 1, length = N))
     if zerorecall
-        val = eltype(thres)(maximum(scores))
-        vcat(thres, val + eps(val))
+        return vcat(thres, nextfloat(thres[end]))
     else
-        thres
+        return thres
     end
 end
 
@@ -100,7 +99,7 @@ function threshold_at_rate(scores::RealVector, rates::RealVector; rev::Bool = tr
 
     # case rate == 1
     if rev
-        thresh = fill(scores[end] + eps(scores[end]), n_rates)
+        thresh = fill(nextfloat(scores[end]), n_rates)
         thresh[rates .== 1] .= scores[end]
     else
         thresh = fill(scores[end], n_rates)
@@ -121,7 +120,7 @@ function threshold_at_rate(scores::RealVector, rates::RealVector; rev::Bool = tr
             rate <= rate_i && break
             rate_last == 0 && rate_i != 0 && (print_warn[j] = true)
 
-            thresh[j] = rev ? t_last + eps(t_last) : t_last
+            thresh[j] = rev ? nextfloat(t_last) : t_last
             j += 1
             j > n_rates && (return thresh, print_warn)
         end
