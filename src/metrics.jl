@@ -549,7 +549,7 @@ end
 @doc raw"""
     f1_score(args...)
 
-Return f1 score (harmonic mean of [`precision`](@ref) and [`recall`](@ref)) defined as
+Return f1 score (harmonic mean of [`precision`](@ref) and [`recall`](@ref true_positive_rate)) defined as
 
 ```math
 \mathrm{f1\_score} = 2 \cdot \frac{\mathrm{precision} \cdot \mathrm{recall}}{\mathrm{precision} + \mathrm{recall}}
