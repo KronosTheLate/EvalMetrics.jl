@@ -5,7 +5,7 @@ using Random
 using MLBase
 Random.seed!(42)
 
-mkpath("./figures")
+mkpath("./assets")
 
 reset_encoding()
 ```
@@ -72,12 +72,12 @@ Then, any of the following can be used:
 
 ```@example plots
 prplot(targets, scores)
-savefig("./figures/pr1.png") # hide
+savefig("./assets/pr1.svg") # hide
 ```
 
 ```@raw html
 <p align="center">
-  <img src="figures/pr1.png?raw=true">
+  <img src="assets/pr1.svg?raw=true">
 </p>
 ```
 
@@ -89,12 +89,12 @@ Furthermore, one can use vectors of vectors like `[targets1, targets2]` and `[sc
 
 ```@example plots
 prplot([targets, targets], [scores, scores .+ rand(10000) ./ 5])
-savefig("./figures/pr2.png") # hide
+savefig("./assets/pr2.svg") # hide
 ```
 
 ```@raw html
 <p align="center">
-  <img src="figures/pr2.png?raw=true">
+  <img src="assets/pr2.svg?raw=true">
 </p>
 ```
 
@@ -102,23 +102,23 @@ For ROC curve use `rocplot` analogically:
 
 ```@example plots
 rocplot(targets, scores)
-savefig("./figures/roc1.png") # hide
+savefig("./assets/roc1.svg") # hide
 ```
 
 ```@raw html
 <p align="center">
-  <img src="figures/roc1.png?raw=true">
+  <img src="assets/roc1.svg?raw=true">
 </p>
 ```
 
 ```@example plots
 rocplot([targets, targets], [scores, scores .+ rand(10000) ./ 5])
-savefig("./figures/roc2.png") # hide
+savefig("./assets/roc2.svg") # hide
 ```
 
 ```@raw html
 <p align="center">
-  <img src="figures/roc2.png?raw=true">
+  <img src="assets/roc2.svg?raw=true">
 </p>
 ```
 
@@ -129,23 +129,23 @@ The appearance of the plot can be changed in exactly the same way as with `Plots
 
 ```@example plots
 prplot(targets, scores; xguide="RECALL", fill=:green, grid=false, xlims=(0.8, 1.0))
-savefig("./figures/pr3.png") # hide
+savefig("./assets/pr3.svg") # hide
 ```
 
 ```@raw html
 <p align="center">
-  <img src="figures/pr3.png?raw=true">
+  <img src="assets/pr3.svg?raw=true">
 </p>
 ```
 
 ```@example plots
 rocplot(targets, scores, title="Title", label="experiment", xscale=:log10)
-savefig("./figures/roc3.png") # hide
+savefig("./assets/roc3.svg") # hide
 ```
 
 ```@raw html
 <p align="center">
-  <img src="figures/roc3.png?raw=true">
+  <img src="assets/roc3.svg?raw=true">
 </p>
 ```
 
@@ -153,12 +153,12 @@ Here, limits on x axis are appropriately changed, unless overridden by using `xl
 
 ```@example plots
 rocplot([targets, targets], [scores, scores .+ rand(10000) ./ 5], label=["a" "b";])
-savefig("./figures/roc4.png") # hide
+savefig("./assets/roc4.svg") # hide
 ```
 
 ```@raw html
 <p align="center">
-  <img src="figures/roc4.png?raw=true">
+  <img src="assets/roc4.svg?raw=true">
 </p>
 ```
 
@@ -170,12 +170,12 @@ prplot!(targets, scores; npoints=10, label="Sampled (10 points)")
 prplot!(targets, scores; npoints=100, label="Sampled (100 points)")
 prplot!(targets, scores; npoints=1000, label="Sampled (1000 points)")
 prplot!(targets, scores; npoints=5000, label="Sampled (5000 points)")
-savefig("./figures/roc4.png") # hide
+savefig("./assets/roc4.svg") # hide
 ```
 
 ```@raw html
 <p align="center">
-  <img src="figures/pr4.png?raw=true">
+  <img src="assets/pr4.svg?raw=true">
 </p>
 ```
 
@@ -185,25 +185,11 @@ Other than that, `diagonal` keyword indicates the diagonal in the plot, and `auc
 
 ```@example plots
 rocplot(targets, scores; aucshow=false, label="a", diagonal=true)
-savefig("./figures/roc5.png") # hide
+savefig("./assets/roc5.svg") # hide
 ```
 
 ```@raw html
 <p align="center">
-  <img src="figures/roc5.png?raw=true">
+  <img src="assets/roc5.svg?raw=true">
 </p>
 ```
-
-## User-defined curves
-
-PR and ROC curves are available out of the box. Additional curve definitions can be provided in the similar way as new metrics are defined using macro `@curve` and defining `apply` function, which computes a point on the curve. For instance, ROC curve can be defined this way:
-
-```@repl curves
-import EvalMetrics: @curve, apply
-@curve MyROCCurve
-apply(::Type{MyROCCurve}, cms::AbstractVector{ConfusionMatrix{T}}) where T <: Real =
-    (false_positive_rate(cms), true_positive_rate(cms))
-myroccurve(targets, scores) == roccurve(targets, scores)
-```
-
-In order to be able to sample from x axis while plotting, `sampling_function` and `lowest_metric_value` must be provided as well.
