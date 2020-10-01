@@ -42,15 +42,12 @@ prevalence
 ## Curves
 
 ```@docs
-EvalMetrics.@curve
-ROCCurve
 roccurve
 rocplot
-au_roc
-PRCurve
+au_roccurve
 prcurve
 prplot
-au_pr
+au_prcurve
 auc_trapezoidal
 ```
 
@@ -80,6 +77,7 @@ RestVsOne
 current_encoding
 set_encoding
 reset_encoding
+check_encoding
 ispositive
 isnegative
 recode

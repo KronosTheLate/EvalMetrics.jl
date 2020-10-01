@@ -84,7 +84,7 @@ recall(targets, scores, [thres, thres])
 ```
 
 ## User defined classification metrics
-It may occur that some useful metric is not defined in the package. To simplify the process of defining a new metric, the package provides the [`@metric`](@ref) macro and [`apply`](@ref) function.
+It may occur that some useful metric is not defined in the package. To simplify the process of defining a new metric, the package provides the [`@metric`](@ref EvalMetrics.@metric) macro and `apply` function.
 
 ```@example metrics
 import EvalMetrics: @metric, apply
@@ -94,7 +94,7 @@ import EvalMetrics: @metric, apply
 apply(::Type{MyRecall}, x::ConfusionMatrix) = x.tp/x.p
 ```
 
-In the previous example, macro [`@metric`](@ref) defines a new abstract type `MyRecall` (used for dispatch) and a function `myrecall` (for easy use of the new metric).  With defined abstract type `MyRecall`, the next step is to define a new method for the [`apply`](@ref) function. This method must have exactly two input arguments: `Type{MyRecall}` and [`ConfusionMatrix`](@ref).  If another argument is needed, it can be added as a keyword argument.
+In the previous example, macro [`@metric`](@ref EvalMetrics.@metric) defines a new abstract type `MyRecall` (used for dispatch) and a function `myrecall` (for easy use of the new metric).  With defined abstract type `MyRecall`, the next step is to define a new method for the `apply` function. This method must have exactly two input arguments: `Type{MyRecall}` and [`ConfusionMatrix`](@ref).  If another argument is needed, it can be added as a keyword argument.
 
 ```julia
 function apply(::Type{Fβ_score}, x::ConfusionMatrix; β::Real = 1)
@@ -102,7 +102,7 @@ function apply(::Type{Fβ_score}, x::ConfusionMatrix; β::Real = 1)
 end
 ```
 
-It is easy to check that the `myrecall` metric returns the same outputs as the [`recall`](@ref) metric defined in the package
+It is easy to check that the `myrecall` metric returns the same outputs as the [`recall`](@ref true_positive_rate) metric defined in the package
 
 ```@repl metrics
 myrecall(cm1)
