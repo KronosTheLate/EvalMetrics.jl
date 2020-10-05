@@ -15,6 +15,9 @@ include("encodings/Encodings.jl")
 include("confusion_matrix.jl")
 
 const CMVector{T<:Real} = AbstractVector{ConfusionMatrix{T}}
+const SHOW_WARN = Ref{Bool}(true)
+
+showwarnings(flag::Bool) = SHOW_WARN[] = flag
 
 include("metrics.jl")
 include("thresholds.jl")

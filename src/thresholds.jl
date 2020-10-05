@@ -134,20 +134,22 @@ end
 
 
 @doc raw"""
-    threshold_at_tpr(targets, scores, tpr)
-    threshold_at_tpr(enc, targets, scores, tpr)
+    threshold_at_tpr(targets, scores, α)
+    threshold_at_tpr(enc, targets, scores, α)
 
-For given true positive rate `tpr ∈ [0, 1]`, return the highest possible decision threshold `t` that satisfies
+For given true positive rate `α ∈ [0, 1]` return a decision threshold `t` defined as
 
 ```math
-\mathrm{true\_positive\_rate}(targets, scores, t) \geq tpr > \mathrm{true\_positive\_rate}(targets, scores, t + \varepsilon)
+\sup_{t} \{t \mid tpr(targets, scores, t) \geq \alpha\}
 ```
+
+where `tpr(targets, scores, t)` is the true positive rate computed for given decision threshold `t`, see [`true_positive_rate`](@ref)
 
 # Arguments
 
 - `targets::AbstractVector`: ground truth (correct) target values
 - `scores::RealVector`: a vector of scores given by the classifier; a sample `i` is classified as positive if `scores[i] >= t`, where `t` is the decision threshold
-- `tpr::Union{Real, RealVector}`: true positive rate or a sorted vector of true poitive rates; if `tpr` is scalar the function returns one threshold, otherwise it returns a vector of thresholds
+- `α::Union{Real, RealVector}`: true positive rate or a sorted vector of true poitive rates; if `α` is scalar the function returns one threshold, otherwise it returns a vector of thresholds
 - `enc::TwoClassEncoding`: label encoding for two-class problems; the default encoding is given by [`current_encoding`](@ref) function
 
 # Examples
@@ -166,8 +168,8 @@ julia> true_positive_rate(targets, scores, t + eps(t))
 0.3333333333333333
 ```
 """
-function threshold_at_tpr(targets::AbstractVector, scores::RealVector, tpr)
-    return threshold_at_tpr(current_encoding(), targets, scores, tpr)
+function threshold_at_tpr(targets::AbstractVector, scores::RealVector, α)
+    return threshold_at_tpr(current_encoding(), targets, scores, α)
 end
 
 
@@ -175,10 +177,10 @@ function threshold_at_tpr(
     enc::TwoClassEncoding,
     targets::AbstractVector,
     scores::RealVector,
-    tpr::Real,
+    α::Real,
 )
 
-    return threshold_at_tpr(enc, targets, scores, [tpr])[1]
+    return threshold_at_tpr(enc, targets, scores, [α])[1]
 end
 
 
@@ -186,7 +188,7 @@ function threshold_at_tpr(
     enc::TwoClassEncoding,
     targets::AbstractVector,
     scores::RealVector,
-    tpr::RealVector,
+    α::RealVector,
 )
 
     if length(targets) != length(scores)
@@ -197,31 +199,33 @@ function threshold_at_tpr(
     end
 
     scores_pos = sort(scores[ispositive.(enc, targets)]; rev = false)
-    rates = round.(1 .- reverse(tpr); digits = 14)
+    rates = round.(1 .- reverse(α); digits = 14)
     ts, print_warn = threshold_at_rate(scores_pos, rates; rev = false)
 
-    if any(print_warn)
-        rates = tpr[reverse(print_warn)]
+    if any(print_warn) && SHOW_WARN[]
+        rates = α[reverse(print_warn)]
         @warn "The closest higher feasible true positive rate to some of the required values ($(join(rates, ", "))) is 1.0!"
     end
     return reverse(ts)
 end
 
 @doc raw"""
-    threshold_at_tnr(targets, scores, tnr)
-    threshold_at_tnr(enc, targets, scores, tnr)
+    threshold_at_tnr(targets, scores, α)
+    threshold_at_tnr(enc, targets, scores, α)
 
-For given true negative rate `tnr ∈ [0, 1]`, return the smallest possible decision threshold `t` that satisfies
+For given true negative rate `α ∈ [0, 1]` return a decision threshold `t` defined as
 
 ```math
-\mathrm{true\_negative\_rate}(targets, scores, t) \geq tnr > \mathrm{true\_negative\_rate}(targets, scores, t - \varepsilon)
+\inf_{t} \{t \mid tnr(targets, scores, t) \geq \alpha\}
 ```
+
+where `tnr(targets, scores, t)` is the true negative rate computed for given decision threshold `t`, see [`true_negative_rate`](@ref)
 
 # Arguments
 
 - `targets::AbstractVector`: ground truth (correct) target values
 - `scores::RealVector`: a vector of scores given by the classifier; a sample `i` is classified as positive if `scores[i] >= t`, where `t` is the decision threshold
-- `tnr::Union{Real, RealVector}`: true positive rate or a sorted vector of true poitive rates; if `tnr` is scalar the function returns one threshold, otherwise it returns a vector of thresholds
+- `α::Union{Real, RealVector}`: true positive rate or a sorted vector of true poitive rates; if `α` is scalar the function returns one threshold, otherwise it returns a vector of thresholds
 - `enc::TwoClassEncoding`: label encoding for two-class problems; the default encoding is given by [`current_encoding`](@ref) function
 
 # Examples
@@ -240,8 +244,8 @@ julia> true_negative_rate(targets, scores, t - eps(t))
 0.25
 ```
 """
-function threshold_at_tnr(targets::AbstractVector, scores::RealVector, tnr)
-    return threshold_at_tnr(current_encoding(), targets, scores, tnr)
+function threshold_at_tnr(targets::AbstractVector, scores::RealVector, α)
+    return threshold_at_tnr(current_encoding(), targets, scores, α)
 end
 
 
@@ -249,10 +253,10 @@ function threshold_at_tnr(
     enc::TwoClassEncoding,
     targets::AbstractVector,
     scores::RealVector,
-    tnr::Real,
+    α::Real,
 )
 
-    return threshold_at_tnr(enc, targets, scores, [tnr])[1]
+    return threshold_at_tnr(enc, targets, scores, [α])[1]
 end
 
 
@@ -260,7 +264,7 @@ function threshold_at_tnr(
     enc::TwoClassEncoding,
     targets::AbstractVector,
     scores::RealVector,
-    tnr::RealVector,
+    α::RealVector,
 )
 
     if length(targets) != length(scores)
@@ -271,31 +275,33 @@ function threshold_at_tnr(
     end
 
     scores_neg = sort(scores[isnegative.(enc, targets)]; rev = true)
-    rates = round.(1 .- reverse(tnr); digits = 14)
+    rates = round.(1 .- reverse(α); digits = 14)
     ts, print_warn = threshold_at_rate(scores_neg, rates; rev = true)
 
-    if any(print_warn)
-        rates = tnr[reverse(print_warn)]
+    if any(print_warn) && SHOW_WARN[]
+        rates = α[reverse(print_warn)]
         @warn "The closest higher feasible true negative rate to some of the required values ($(join(rates, ", "))) is 1.0!"
     end
     return reverse(ts)
 end
 
 @doc raw"""
-    threshold_at_fpr(targets, scores, tnr)
-    threshold_at_fpr(enc, targets, scores, tnr)
+    threshold_at_fpr(targets, scores, α)
+    threshold_at_fpr(enc, targets, scores, α)
 
-For given false positive rate `tnr ∈ [0, 1]`, return the smallest possible decision threshold `t` that satisfies
+For given false positive rate `α ∈ [0, 1]` return a decision threshold `t` defined as
 
 ```math
-\mathrm{false\_positive\_rate}(targets, scores, t) \leq fpr < \mathrm{false\_positive\_rate}(targets, scores, t - \varepsilon)
+\inf_{t} \{t \mid fpr(targets, scores, t) \leq \alpha\}
 ```
+
+where `fpr(targets, scores, t)` is the false positive rate computed for given decision threshold `t`, see [`false_positive_rate`](@ref)
 
 # Arguments
 
 - `targets::AbstractVector`: ground truth (correct) target values
 - `scores::RealVector`: a vector of scores given by the classifier; a sample `i` is classified as positive if `scores[i] >= t`, where `t` is the decision threshold
-- `fpr::Union{Real, RealVector}`: true positive rate or a sorted vector of true poitive rates; if `fpr` is scalar the function returns one threshold, otherwise it returns a vector of thresholds
+- `α::Union{Real, RealVector}`: true positive rate or a sorted vector of true poitive rates; if `α` is scalar the function returns one threshold, otherwise it returns a vector of thresholds
 - `enc::TwoClassEncoding`: label encoding for two-class problems; the default encoding is given by [`current_encoding`](@ref) function
 
 # Examples
@@ -314,8 +320,8 @@ julia> false_positive_rate(targets, scores, t - eps(t))
 0.75
 ```
 """
-function threshold_at_fpr(targets::AbstractVector, scores::RealVector, fpr)
-    return threshold_at_fpr(current_encoding(), targets, scores, fpr)
+function threshold_at_fpr(targets::AbstractVector, scores::RealVector, α)
+    return threshold_at_fpr(current_encoding(), targets, scores, α)
 end
 
 
@@ -323,17 +329,17 @@ function threshold_at_fpr(
     enc::TwoClassEncoding,
     targets::AbstractVector,
     scores::RealVector,
-    fpr::Real,
+    α::Real,
 )
 
-    return threshold_at_fpr(enc, targets, scores, [fpr])[1]
+    return threshold_at_fpr(enc, targets, scores, [α])[1]
 end
 
 function threshold_at_fpr(
     enc::TwoClassEncoding,
     targets::AbstractVector,
     scores::RealVector,
-    fpr::RealVector,
+    α::RealVector,
 )
 
     if length(targets) != length(scores)
@@ -344,30 +350,32 @@ function threshold_at_fpr(
     end
 
     scores_neg = sort(scores[isnegative.(enc, targets)]; rev = true)
-    ts, print_warn = threshold_at_rate(scores_neg, fpr; rev = true)
+    ts, print_warn = threshold_at_rate(scores_neg, α; rev = true)
 
-    if any(print_warn)
-        rates = fpr[print_warn]
+    if any(print_warn) && SHOW_WARN[]
+        rates = α[print_warn]
         @warn "The closest lower feasible false positive rate to some of the required values ($(join(rates, ", "))) is 0.0!"
     end
     return ts
 end
 
 @doc raw"""
-    threshold_at_fnr(targets, scores, fnr)
-    threshold_at_fnr(enc, targets, scores, fnr)
+    threshold_at_fnr(targets, scores, α)
+    threshold_at_fnr(enc, targets, scores, α)
 
-For given false positive rate `fnr ∈ [0, 1]`, return the highest possible decision threshold `t` that satisfies
+For given false negative rate `α ∈ [0, 1]` return a decision threshold `t` defined as
 
 ```math
-\mathrm{false\_negative\_rate}(targets, scores, t) \leq fnr < \mathrm{false\_negative\_rate}(targets, scores, t + \varepsilon)
+\sup_{t} \{t \mid fnr(targets, scores, t) \leq \alpha\}
 ```
+
+where `fnr(targets, scores, t)` is the false negative rate computed for given decision threshold `t`, see [`false_negative_rate`](@ref)
 
 # Arguments
 
 - `targets::AbstractVector`: ground truth (correct) target values
 - `scores::RealVector`: a vector of scores given by the classifier; a sample `i` is classified as positive if `scores[i] >= t`, where `t` is the decision threshold
-- `fnr::Union{Real, RealVector}`: true positive rate or a sorted vector of true poitive rates; if `fnr` is scalar the function returns one threshold, otherwise it returns a vector of thresholds
+- `α::Union{Real, RealVector}`: true positive rate or a sorted vector of true poitive rates; if `α` is scalar the function returns one threshold, otherwise it returns a vector of thresholds
 - `enc::TwoClassEncoding`: label encoding for two-class problems; the default encoding is given by [`current_encoding`](@ref) function
 
 # Examples
@@ -386,18 +394,18 @@ julia> false_negative_rate(targets, scores, t + eps(t))
 0.6666666666666666
 ```
 """
-function threshold_at_fnr(targets::AbstractVector, scores::RealVector, fnr)
-    return threshold_at_fnr(current_encoding(), targets, scores, fnr)
+function threshold_at_fnr(targets::AbstractVector, scores::RealVector, α)
+    return threshold_at_fnr(current_encoding(), targets, scores, α)
 end
 
 function threshold_at_fnr(
     enc::TwoClassEncoding,
     targets::AbstractVector,
     scores::RealVector,
-    fnr::Real,
+    α::Real,
 )
 
-    return threshold_at_fnr(enc, targets, scores, [fnr])[1]
+    return threshold_at_fnr(enc, targets, scores, [α])[1]
 end
 
 
@@ -405,7 +413,7 @@ function threshold_at_fnr(
     enc::TwoClassEncoding,
     targets::AbstractVector,
     scores::RealVector,
-    fnr::RealVector,
+    α::RealVector,
 )
 
     if length(targets) != length(scores)
@@ -416,10 +424,10 @@ function threshold_at_fnr(
     end
 
     scores_pos = sort(scores[ispositive.(enc, targets)]; rev = false)
-    ts, print_warn = threshold_at_rate(scores_pos, fnr; rev = false)
+    ts, print_warn = threshold_at_rate(scores_pos, α; rev = false)
 
-    if any(print_warn)
-        rates = fnr[print_warn]
+    if any(print_warn) && SHOW_WARN[]
+        rates = α[print_warn]
         @warn "The closest lower feasible false negative rate to some of the required values ($(join(rates, ", "))) is 0.0!"
     end
     return ts
