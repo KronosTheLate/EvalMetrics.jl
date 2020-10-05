@@ -20,6 +20,7 @@
     # points on the main curve
     indexes = highlight(x,y) |> skipmissing |> collect
     if !isempty(indexes)
+        indexes = filter(ind -> ind <= length(x), indexes)
         lbls = map(indexes) do i
             lbl = "($(round(x[i]; digits = 2)),  $(round(y[i]; digits = 2)))"
             return (x[i], y[i], Plots.text(lbl, :bottom, 8))
@@ -54,6 +55,21 @@
     end
 end
 
+@shorthands mlcurve
+
+"""
+    mlcurve(x, y; highlight, diagonal)
+
+Make a simple line plot of `y` vs. `x`. Both `x`, `y` should be from the interval `[0,1]`.
+
+# Keyword arguments
+
+- `diagonal::Bool = false`: if `true` the diagonal line from `[0,0,]` to `[1,1]` is created
+- `highlight::Function = (x,y) -> Int[]`: a function that returns the indexes of the points to be highlighted
+"""
+mlcurve
+
+
 function findrates(x, y, rates::AbstractArray; kwargs...)
     return [findrates(x, y, rate; kwargs...) for rate in rates]
 end
@@ -63,8 +79,6 @@ function findrates(x, y, rate::Real; xaxis::Bool = true)
     ind = findfirst(val -> val >= rate, vals)
     return typeof(ind) <: Integer ? ind : missing
 end
-
-@shorthands mlcurve
 
 # label with auc
 function auc_label(plotattributes, auc_score, args...)
@@ -137,6 +151,13 @@ end
     (ROCCurve, h.args...)
 end
 
+"""
+    rocplot(args...; kwargs...)
+
+Make an roc curve plot. See [`roccurve`](@ref) and [`mlcurve`](@ref EvalMetrics.mlcurve) for more details about input arguments.
+"""
+rocplot
+
 @userplot PRPlot
 
 @recipe function f(h::PRPlot)
@@ -153,3 +174,10 @@ end
 
     (PRCurve, h.args...)
 end
+
+"""
+    prplot(args...; kwargs...)
+
+Make an precision-recall curve plot. See [`prcurve`](@ref) and [`mlcurve`](@ref EvalMetrics.mlcurve) for more details about input arguments.
+"""
+prplot
