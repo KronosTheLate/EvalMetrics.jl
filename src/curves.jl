@@ -99,9 +99,9 @@ Return a roc curve (false positive rates and true positive rates) computed from 
 
 # Keyword arguments
 
-- `npoints::Int`: number of discretization points
-- `xscale::Symbol`: scale of the x-axis (`:identity` or `:log10`)
-- `xlims::Tuple{Real, Real}`: limits on the x-axis
+- `npoints::Int = 300`: number of discretization points
+- `xscale::Symbol = :identity`: scale of the x-axis (`:identity` or `:log10`)
+- `xlims::Tuple{Real, Real} = (1/n_neg, 1)`: limits on the x-axis
 
 # Examples
 
@@ -192,9 +192,9 @@ Return a precision-recall curve computed from the target vector and the vector o
 
 # Keyword arguments
 
-- `npoints::Int`: number of discretization points
-- `xscale::Symbol`: scale of the x-axis (`:identity` or `:log10`)
-- `xlims::Tuple{Real, Real}`: limits on the x-axis
+- `npoints::Int = 300`: number of discretization points
+- `xscale::Symbol = :identity`: scale of the x-axis (`:identity` or `:log10`)
+- `xlims::Tuple{Real, Real} = (1/n_pos, 1)`: limits on the x-axis
 
 # Examples
 
